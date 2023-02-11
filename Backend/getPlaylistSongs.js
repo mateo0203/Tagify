@@ -1,3 +1,8 @@
+/**
+ * Gets songs given a playlist ID input
+ * 
+ */
+
 const fs = require('fs')
 const SpotifyWebApi = require('spotify-web-api-node');
 const token = "BQC_-mgrhCiwu0RzshP5GZxPiF-0MIyNEXEFOXEY-OZNnkEj-5Cq2g-IDtVo9_L8s4besIiuLVV1uGpagDDps_boGho3IH3IOWRCWAVHwCNDpN9XFlrMjP1O-XjYWXpUra9J-mqIZGzXXmzrySxABWEf0Ee_XObuVgCCxLSRsr5aiarzZ3oiRQj75UCGlfg9OHJhHZKRX17PcoZxXjxl0yXyWcljRCnDQfDKJOUVX_hMZKJpHvspNwFnSGFWr8VKZuyTWj3l911pWV2omfWo3ksruh_YsJy-VKwMQFXtK4ZFAwTpHMp0lR-ORVYI3niMMNaQGHC2QVluVVr-yJ_AtH65UQ";
