@@ -8,15 +8,15 @@ Router.get('/getPlaylists/:user', async (req, res)=>{
 
     const user = req.params.user;
     try{
-        const getPlaylistNames = await getUserPlaylistsNames(user);
+        const getUserPlaylists = await getUserPlaylists(user);
         
         // CHECK THAT getPlaylistNames != 0
 
-        if (getPlaylistNames.rowCount === 0){
+        if (getUserPlaylists.length === 0){
 
             return res.status(204).json({
                 statusMessage: 'failed',
-                errorMessage: 'No Content'
+                errorMessage: 'The user has 0 playlists'
             });
 
         }
@@ -83,11 +83,11 @@ Router.get('/getSongsFromPlaylist/:user/:playlist', async (req, res)=>{
 
 //Get songs from playlist with tag filter from user
 
-Router.get('/getFilteredSongsFromPlaylist/:user/:playlist/:tag', async (req, res)=>{
+Router.get('/getFilteredSongsFromPlaylist/:user_id/:playlist_id/:tag_name', async (req, res)=>{
 
-    const user = req.params.user;
-    const playlist = req.params.playlist;
-    const tag = req.params.tag;
+    const user_id = req.params.user;
+    const playlist_id = req.params.playlist;
+    const tag_name = req.params.tag;
 
     try{
         const getPlaylistSongs = await getUserPlaylistSongs(playlist_id);
@@ -103,7 +103,7 @@ Router.get('/getFilteredSongsFromPlaylist/:user/:playlist/:tag', async (req, res
             });
         }
 
-        const getSongsWTag = await db.query('SELECT tag_songs FROM tags where $1 = ANY(tag_user) AND tag_name = $2', [user, tag]);
+        const getSongsWTag = await db.query('SELECT tag_songs FROM tags where $1 = tag_user AND tag_name = $2', [user_id, tag_name]);
 
         // CHECK THAT getSongsWTag.length != 0
         if (getSongsWTag.rowCount === 0){
@@ -119,14 +119,32 @@ Router.get('/getFilteredSongsFromPlaylist/:user/:playlist/:tag', async (req, res
         getSongsWTag.sort();
         getPlaylistSongs.sort();
         let filteredSongs = [];
+        let psIndex = 0;
+        let stIndex = 0;
+        while(getPlaylistSongs.length < psIndex || getSongsWTag.length < stIndex) {
+            if(getSongsWTag[stIndex] > getPlaylistSongs[psIndex]) {
+                psIndex++;
+            } else if(getSongsWTag[stIndex] < getPlaylistSongs[psIndex]){
+                stIndex++;
+            } else {
+                filteredSongs.append(getSongsWTag[stIndex]);
+                stIndex++;
+                psIndex++;
+            }
+        }
 
-        //for (let i = 0; i < )
+        // CHECK THAT getSongsWTag.length != 0
+            if (filteredSongs.length === 0){
+                return res.status(204).json({
+                    statusMessage: 'No songs for that tag',
+                });
+                }
 
         // RETURNING THE DATA OF getSongs
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getSongs.rows
+            filterWorkers: filteredSongs
         });
 
     }
