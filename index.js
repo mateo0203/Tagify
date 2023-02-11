@@ -1,4 +1,5 @@
 /**
+ * gotten from https://github.com/thelinmichael/spotify-web-api-node
  * This example is using the Authorization Code flow.
  *
  * In root directory run
@@ -13,8 +14,8 @@
  *
  *  and visit <http://localhost:3000/login> in your Browser.
  */
-const SpotifyWebApi = require('../../');
-const express = require('../../node_modules/express');
+const SpotifyWebApi = require('spotify-web-api-node');
+const express = require('express');
 
 const scopes = [
   'ugc-image-upload',
