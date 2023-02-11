@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/mateo0203/Tagify#readme",
   "dependencies": {
+    "axios": "^1.3.2",
     "express": "^4.18.2",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "spotify-web-api-node": "^5.0.2"
   }
 }
