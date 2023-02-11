@@ -12,18 +12,18 @@ const spotifyApi = new SpotifyWebApi();
 spotifyApi.setAccessToken(token);
 
 //GET MY PROFILE DATA
-function getMyData() {
+function getUserPlaylists() {
     (async () => {
       const me = await spotifyApi.getMe();
       //console.log(me.body); //show user data to terminal
-      getUserPlaylists(me.body.id);
+      getUserPlaylistsHelper(me.body.id);
     })().catch(e => {
       console.error(e);
     });
   }
 
 //GET MY PLAYLISTS
-async function getUserPlaylists(userName) {
+async function getUserPlaylistsHelper(userName) {
     const data = await spotifyApi.getUserPlaylists(userName)
     let playlists = [];
     var lista = [];
@@ -33,8 +33,8 @@ async function getUserPlaylists(userName) {
         lista.push([playlist.name, playlist.id]);
         //break;
     }
-    console.log(lista);
+    //console.log(lista);
     return lista;
   }
 
-  getMyData();
+  getUserPlaylists();
