@@ -5,7 +5,7 @@ const spotifyApi = new SpotifyWebApi();
 
 //GET TOKEN
 function getToken() {
-    const token = "BQDT9VKkXzg1OYTerjDLh6Y-wAhQx4q9zCpNDcUg6B2_35SxwG3Z6d7pk1FKcj1wdxbZxGJZgCMrs0oTnoZ1TECi65uJaV2hiVNBAigebGVQ9lwaqQ3CkTKS4WDXmLPBsfK-yBfvqQyjaPdiLf_bNXj-1Qk-c-q9C7yijp6ZQVddpwlq8f9YOwPEW4Fq445ihmex1MQnTnTZMyplNWrUSh58pnyDSlaCpX0B-8Qj9PZnAS5_0q7yaFjKp0qCiq0FfzfwYzdKvq_a0msp2qNO5oicfIHgMUTCalVl5Ajs6c7wpmzqGzh0-6rAICz53j337PShdRS0-OI_ZXcitvysYMK8Tw";
+    const token = "BQCDFZ4APedRSUp53t0eAOtpQ5SVXP8EXdDHurjMipxlshvU8NFKLCH0b8EfRxMTbY2YMJj0eVPU9Y_G9tQlYf_vvFtktVqX1M5kG15G86g9i_KZ5-3732Jj7AEaHVdjgxCEDaePEde_noce-PUYHmycc1QTFtcl29-gUugf23Y5MtNeT1kVTAy3EtTcvR7hysA5s3jgXuGsF1T1gbaoFQNKGRGntrS6--s_u3U6-CiIqOMjMQGHcCSMBP1tDkBPoueiuxp3YAbHUItSMA-PHA5BrvAnYhKkirTdwU0XevzTkK7Lw3u7QUKaHxQ-FVPDYn-Dmz0ugl1TEgm7UGZBUVQwHg";
 return token;
 }
 
@@ -36,7 +36,6 @@ async function getLikedTracks() {
     const jsonResponse = await axios.get(url, config);
     const jsonData = jsonResponse.data;
     const trackList = jsonData.items
-    //console.log(trackList);
 
     let trackIds = [];
     for (let track_obj of jsonData.items) {
@@ -105,3 +104,5 @@ async function getUserPlaylists(userName) {
 
   getLikedTracks()
   //getAudioFeautures('2lLG56qpLP3UbcLuzMvkWX')
+
+  module.exports = spotifyApi;
