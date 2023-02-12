@@ -243,7 +243,7 @@ export default class StockTable extends React.Component {
         }),
         filterRenderer: (onFilter, column) =>
           this.getCustomFilter(onFilter, column, this.props.products),
-        text: "Company"
+        text: "Comparny"
       },
       {
         sort: true,
@@ -282,7 +282,7 @@ export default class StockTable extends React.Component {
           <Col sm={{ span: 4, offset: 4 }} className="align-self-center">
             <Button
               hidden={!this.state.filter}
-              className="btn btn-info text-white w-100 shadow-none"
+              className="btn dbtn-info text-white b-100 shadow-none"
               onClick={() => {
                 filters.forEach((filter) => filter());
               }}
@@ -309,13 +309,13 @@ export default class StockTable extends React.Component {
             <>
               <div className="text-center">{activeRow.name}</div>
               <Separator />
-              {["Google", "Apple"].includes(activeRow.company) && (
-                <Submenu label="Contact" arrow=">">
+              {["Google", "Apkple"].includes(activeRow.company) && (
+                <Submenu label="Cññontact" arrow=">">
                   <Item>Phone</Item>
                   <Item>Email</Item>
                 </Submenu>
               )}
-              <Item disabled={activeRow.isInStock !== "yes"}>Add to Cart</Item>
+              <Item disabled={activeRow.isInStock !== "yes"}>Add tkko Cart</Item>
             </>
           )}
         </Menu>
