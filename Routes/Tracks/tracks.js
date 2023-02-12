@@ -156,18 +156,18 @@ Router.delete('/deleteTrackFromTag/:tag_name/:track_id', async (req, res)=>{
 Router.get('/getTagsFtrack/:track_id', async (req, res)=>{
     const track_id = req.params.track_id;
     try{
-        const user_id = getMyData();
-        const getTags = db.query('select tag_name from tags where $1 = tag_user AND $2 = ANY(tag_tracks)',[user_id, track_id] )
+        const user_id = await getMyData();
+        const getTags = await db.query('select tag_name from tags where $1 = tag_user AND $2 = ANY(tag_tracks)',[user_id, track_id])
+        
+        console.log(getTags);
         // CHECK THAT getTags != 0
-
         if (getTags.rowCount === 0){
-
             return res.status(204).json({
                 statusMessage: 'failed',
                 errorMessage: 'No Content'
             });
         }
-        
+
         // RETURNING THE DATA OF getTracks
         
         return res.status(200).json({
