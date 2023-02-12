@@ -1,18 +1,17 @@
 const Router = require("express").Router();
-const {getUserPlaylistsNames} = require('.../getMe.js');
+const {getUserPlaylists, getPlaylistTracks, getMyData} = require("../../Backend/spotifyApi");
+const db = require('../../DB');
 
 
-//Get playlists from user
+//Get User Playlists
 
-Router.get('/getPlaylists/:user', async (req, res)=>{
-
-    const user = req.params.user;
+Router.get('/getPlaylists/', async (req, res)=>{
     try{
-        const getUserPlaylists = await getUserPlaylists(user);
+        const getPlaylists = await getUserPlaylists();
         
-        // CHECK THAT getPlaylistNames != 0
+        // CHECK THAT getPlaylists != 0
 
-        if (getUserPlaylists.length === 0){
+        if (getPlaylists.length === 0){
 
             return res.status(204).json({
                 statusMessage: 'failed',
@@ -21,11 +20,11 @@ Router.get('/getPlaylists/:user', async (req, res)=>{
 
         }
 
-        // RETURNING THE DATA OF getPlaylistNames
+        // RETURNING THE DATA OF getPlaylists
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getPlaylistNames.rows
+            filterWorkers: getPlaylists
         });
 
     }
@@ -35,126 +34,135 @@ Router.get('/getPlaylists/:user', async (req, res)=>{
 
         return res.status(400).json({
             statusMessage: 'failed',
-            errorMessage: 'Hubo un error.'
+            errorMessage: error
         });
     }
 });
 
-//GET all songs from Playlist
+//GET Playlist tracks
 
-Router.get('/getSongsFromPlaylist/:user/:playlist', async (req, res)=>{
+Router.get('/getPlaylistTracks/:playlist', async (req, res)=>{
 
-    const user = req.params.user;
-    const playlist = req.params.playlist;
-
-    try{
-        const getSongs = await getUserPlaylistSongs(playlist_id);
-        
-        // CHECK THAT getSongs != 0
-
-        if (getSongs.rowCount === 0){
-
-            return res.status(204).json({
-                statusMessage: 'failed',
-                errorMessage: 'No Content'
-            });
-
-        }
-
-        // RETURNING THE DATA OF getSongs
-        
-        return res.status(200).json({
-            statusMessage:'success',
-            filterWorkers: getSongs.rows
-        });
-
-    }
-    catch(error){
-
-        // IF THERE IS AN ERROR
-
-        return res.status(400).json({
-            statusMessage: 'failed',
-            errorMessage: 'Hubo un error.'
-        });
-    }
-});
-
-
-//Get songs from playlist with tag filter from user
-
-Router.get('/getFilteredSongsFromPlaylist/:user_id/:playlist_id/:tag_name', async (req, res)=>{
-
-    const user_id = req.params.user;
     const playlist_id = req.params.playlist;
-    const tag_name = req.params.tag;
 
     try{
-        const getPlaylistSongs = await getUserPlaylistSongs(playlist_id);
 
+        const getTracks = await getPlaylistTracks(playlist_id);
         
-        // CHECK THAT getFilteredSongs != 0
+        // CHECK THAT getTracks != 0
+        if (getTracks.length === 0){
 
-        if (getPlaylistSongs.rowCount === 0){
+            return res.status(204).json({
+                statusMessage: 'failed',
+                errorMessage: 'No Content'
+            });
 
+        }
+
+        // RETURNING THE DATA OF getTracks
+        
+        return res.status(200).json({
+            statusMessage:'success',
+            filterWorkers: getTracks
+        });
+
+    }
+    catch(error){
+
+        // IF THERE IS AN ERROR
+
+        return res.status(400).json({
+            statusMessage: 'failed',
+            errorMessage: 'Hubo un error.'
+        });
+    }
+});
+
+
+//Get Filtered Playlists Tracks
+
+Router.get('/getFilteredPlaylistTracks/:playlist/:tag_id', async (req, res)=>{
+
+    const playlist_id = req.params.playlist;
+    const tag_id = req.params.tag_id;
+
+    try{
+
+        const getTracks = await getPlaylistTracks(playlist_id);
+        let pTracksId = [];
+
+        for(let i = 0 ; i < getTracks.length ; i++) {
+            pTracksId.push(getTracks[i][2])
+        }
+        const user_id = await getMyData();
+        
+        // CHECK THAT getFilteredTracks != 0
+
+        if (getTracks.length === 0){
+            return res.status(204).json({
+                statusMessage: 'failed',
+                errorMessage: 'No Content'
+            });
+        }
+        let getTracksWTag = await db.query('SELECT tag_tracks FROM tags where $1 = tag_user AND tag_id = $2', [user_id, tag_id])
+
+        // CHECK THAT getTracksWTag.length != 0
+        if (getTracksWTag.rowCount === 0){
             return res.status(204).json({
                 statusMessage: 'failed',
                 errorMessage: 'No Content'
             });
         }
 
-        const getSongsWTag = await db.query('SELECT tag_songs FROM tags where $1 = tag_user AND tag_name = $2', [user_id, tag_name]);
+        //Get tracks that are in both lists
+        getTracksWTag = getTracksWTag.rows[0].tag_tracks;
+        getTracksWTag.sort();
+        pTracksId.sort();
 
-        // CHECK THAT getSongsWTag.length != 0
-        if (getSongsWTag.rowCount === 0){
+        //print both lists
+        console.log(getTracksWTag + " This is are all the songs from the tag")
+        console.log(pTracksId + " This is are all the songs from the playlist")
 
-            return res.status(204).json({
-                statusMessage: 'failed',
-                errorMessage: 'No Content'
-            });
-        }
 
-        //Get songs that are in both lists
-
-        getSongsWTag.sort();
-        getPlaylistSongs.sort();
-        let filteredSongs = [];
-        let psIndex = 0;
+        let filteredTracks = [];
+        let ptIndex = 0;
         let stIndex = 0;
-        while(getPlaylistSongs.length < psIndex || getSongsWTag.length < stIndex) {
-            if(getSongsWTag[stIndex] > getPlaylistSongs[psIndex]) {
-                psIndex++;
-            } else if(getSongsWTag[stIndex] < getPlaylistSongs[psIndex]){
+        while(pTracksId.length > ptIndex && getTracksWTag.length > stIndex) {
+            if(getTracksWTag[stIndex] > pTracksId[ptIndex]) {
+                ptIndex++;
+            } else if(getTracksWTag[stIndex] < pTracksId[ptIndex]){
                 stIndex++;
             } else {
-                filteredSongs.append(getSongsWTag[stIndex]);
+                filteredTracks.push(getTracksWTag[stIndex]);
                 stIndex++;
-                psIndex++;
+                ptIndex++;
             }
         }
 
-        // CHECK THAT getSongsWTag.length != 0
-            if (filteredSongs.length === 0){
+        // CHECK THAT getTracksWTag.length != 0
+            if (filteredTracks.length === 0){
                 return res.status(204).json({
-                    statusMessage: 'No songs for that tag',
+                    statusMessage: 'No tracks for that tag',
                 });
                 }
 
-        // RETURNING THE DATA OF getSongs
+        // RETURNING THE DATA OF getTracks
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: filteredSongs
+            filteredTracks: filteredTracks
         });
 
     }
     catch(error){
 
         // IF THERE IS AN ERROR
-
+        console.log(error)
         return res.status(400).json({
             statusMessage: 'failed',
             errorMessage: 'Hubo un error.'
         });
     }
 });
+
+module.exports = Router;

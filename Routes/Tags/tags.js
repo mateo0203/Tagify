@@ -1,12 +1,12 @@
-const Router = require("express").Router()
+const Router = require("express").Router();
+const {getMyData} = require("../../Backend/spotifyApi");
+const db = require('../../DB');
 
 //get all tags from user
-Router.get('/getAllTags/:user', async (req, res)=>{
-
-    const user = req.params.user;
+Router.get('/getAllTags/', async (req, res)=>{
     try{
-
-        const getTagsFromUser = await db.query('SELECT tag_songs FROM tags where $1 = ANY(tag_user)', [user]);
+        const user_id = await getMyData();
+        const getTagsFromUser = await db.query('SELECT tag_name FROM tags where $1 = tag_user', [user_id]);
 
         // CHECK THAT getTagsFromUser != 0
 
@@ -16,19 +16,22 @@ Router.get('/getAllTags/:user', async (req, res)=>{
             });
 
         }
-
+        let tagsArray = []
+        for(let i = 0; i < Object.keys(getTagsFromUser.rows).length; i++) {
+            tagsArray.push(getTagsFromUser.rows[i].tag_name)
+        }
         // RETURNING THE DATA OF getPlaylistNames
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getTagsFromUser.rows
+            tagsFromUser: tagsArray
         });
 
     }
     catch(error){
 
         // IF THERE IS AN ERROR
-
+        console.log(error);
         return res.status(400).json({
             statusMessage: 'failed',
             errorMessage: 'Hubo un error.'
@@ -38,30 +41,34 @@ Router.get('/getAllTags/:user', async (req, res)=>{
 
 
 
-//Get all songs with tag from user
+//Get all tracks with tag from user
 
-Router.get('/getAllSongsWTag/:user/:tag', async (req, res)=>{
+Router.get('/getAllTracksWTag/:tag_name', async (req, res)=>{
 
-    const user = req.params.user;
-    const tag = req.params.tag;
+    
+    const tag_name = req.params.tag_name;
     try{
+        const user_id = await getMyData();
+        const getAllTracksWTag = await db.query('SELECT tag_tracks FROM tags where $1 = tag_user AND tag_name = $2', [user_id, tag_name ]);
 
-        const getAllSongsWTag = await db.query('SELECT tag_songs FROM tags where $1 = ANY(tag_user) AND tag_name = $2', [user,tag ]);
+        // CHECK THAT getAllTracksWTag != 0
 
-        // CHECK THAT getAllSongsWTag != 0
-
-        if (getAllSongsWTag.rowCount === 0){
+        if (getAllTracksWTag.rowCount === 0){
             return res.status(204).json({
                 statusMessage: 'No song with that tag.'
             });
-
         }
 
-        // RETURNING THE DATA OF getAllSongsWTag
+        let tracksArray = []
+        for(let i = 0; i < Object.keys(getAllTracksWTag.rows).length; i++) {
+            tracksArray.push(getAllTracksWTag.rows[i].tag_tracks)
+        }
+
+        // RETURNING THE DATA OF getAllTracksWTag
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getAllSongsWTag.rows
+            allTracks: tracksArray[0]
         });
 
     }
@@ -75,3 +82,5 @@ Router.get('/getAllSongsWTag/:user/:tag', async (req, res)=>{
         });
     }
 });
+
+module.exports = Router;
