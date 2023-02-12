@@ -96,93 +96,6 @@ export default class StockTable extends React.Component {
       : null;
   };
 
-  renderDropDown = ({ options, currSizePerPage, onSizePerPageChange }) => {
-    const customStyles = {
-      menu: (provided, state) => ({
-        ...provided,
-        color: "#0d6efd"
-      }),
-      control: (provided, state) => ({
-        ...provided,
-        backgroundColor: "#0d6efd",
-        color: "white"
-      }),
-      singleValue: (provided, state) => ({
-        ...provided,
-        color: "white"
-      }),
-      dropdownIndicator: (provided, state) => ({
-        ...provided,
-        color: "white",
-        "&:hover": {
-          color: "#bbbbbb"
-        }
-      }),
-      indicatorSeparator: (provided, state) => ({
-        ...provided,
-        backgroundColor: "white"
-      })
-    };
-    return (
-      <Row>
-        <Col md={4}>
-          <Select
-            defaultValue={{ label: 5, value: 5 }}
-            isSearchable={false}
-            styles={customStyles}
-            onChange={(selected) => {
-              onSizePerPageChange(selected.value);
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: "5px",
-              backgroundColor: "#0d6efd"
-            })}
-            options={[
-              { label: 5, value: 5 },
-              { label: 10, value: 10 },
-              { label: 15, value: 15 },
-              { label: "All", value: this.props.products.length }
-            ]}
-          />
-        </Col>
-        <Col
-          md={8}
-          ref={this.portal}
-          className="justify-content-center align-self-center"
-        ></Col>
-      </Row>
-    );
-  };
-
-  renderPageList = (options) => (
-    <Col className="react-bootstrap-table-pagination-list" md={6}>
-      <ul className="pagination react-bootstrap-table-page-btns-ul float-end">
-        {options.pages.map((page) => (
-          <li
-            key={page.page}
-            className={`${page.active ? "active " : ""}page-item`}
-            onClick={() => options.onPageChange(page.page)}
-          >
-            <a href="#" className="page-link">
-              {page.page}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </Col>
-  );
-
-  renderPaginationTotal = (start, to, total) =>
-    this.state.portalReady
-      ? ReactDOM.createPortal(
-          <span>
-            {start} to {to} of {total}
-          </span>,
-          this.portal.current
-        )
-      : null;
-
   showContext = (event, row) => {
     this.setState({ activeRow: row });
     event.preventDefault();
@@ -200,16 +113,6 @@ export default class StockTable extends React.Component {
         this.showContext(e, row);
       }
     };
-    const pagination = paginationFactory({
-      sizePerPage: 5,
-      firstPageText: "First",
-      lastPageText: "Last",
-      alwaysShowAllBtns: true,
-      showTotal: true,
-      pageListRenderer: this.renderPageList,
-      paginationTotalRenderer: this.renderPaginationTotal,
-      sizePerPageRenderer: this.renderDropDown
-    });
     const rowStyle = (row) => {
       if (row === this.state.activeRow) {
         return {
@@ -222,50 +125,30 @@ export default class StockTable extends React.Component {
     const columns = [
       {
         sort: true,
-        dataField: "id",
-        text: "Product ID"
+        dataField: "title",
+        text: "Title",
       },
       {
         sort: true,
-        dataField: "name",
-        text: "Product Name",
-        filter: customFilter({
-          type: FILTER_TYPES.TEXT
-        }),
-        filterRenderer: (onFilter, column) =>
-          this.getTextFilter(onFilter, column)
+        dataField: "artist",
+        text: "Artist",
       },
       {
         sort: true,
-        dataField: "company",
-        filter: customFilter({
-          type: FILTER_TYPES.MULTISELECT
-        }),
-        filterRenderer: (onFilter, column) =>
-          this.getCustomFilter(onFilter, column, this.props.products),
-        text: "Company"
+        dataField: "album",
+        text: "Album",
       },
       {
         sort: true,
-        dataField: "quantity",
-        filter: customFilter({
-          type: FILTER_TYPES.MULTISELECT,
-          comparator: Comparator.EQ
-        }),
-        filterRenderer: (onFilter, column) =>
-          this.getCustomFilter(onFilter, column, this.props.products),
-        text: "Quantity"
-      },
-      {
-        sort: true,
-        dataField: "isInStock",
+        dataField: "tags",
         filter: customFilter({
           type: FILTER_TYPES.MULTISELECT
         }),
         filterRenderer: (onFilter, column) =>
           this.getCustomFilter(onFilter, column, this.props.products),
-        text: "In Stock"
-      }
+        text: "Tags",
+
+      },
     ];
 
     return (
@@ -301,7 +184,6 @@ export default class StockTable extends React.Component {
           data={this.props.products}
           rowEvents={rowEvents}
           rowStyle={rowStyle}
-          pagination={pagination}
           filter={filterFactory()}
         />
         <Menu id="context-menu">
@@ -309,13 +191,13 @@ export default class StockTable extends React.Component {
             <>
               <div className="text-center">{activeRow.name}</div>
               <Separator />
-              {["Google", "Apple"].includes(activeRow.company) && (
+              {["Google", "Apple"].includes(activeRow.artist) && (
                 <Submenu label="Contact" arrow=">">
                   <Item>Phone</Item>
                   <Item>Email</Item>
                 </Submenu>
               )}
-              <Item disabled={activeRow.isInStock !== "yes"}>Add to Cart</Item>
+              <Item disabled={activeRow.isInStock !== "yes"}>Add Tag</Item>
             </>
           )}
         </Menu>
