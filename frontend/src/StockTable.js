@@ -105,6 +105,7 @@ export default class StockTable extends React.Component {
     });
   };
 
+
   render() {
     let { activeRow } = this.state;
     const rowEvents = {
@@ -116,9 +117,9 @@ export default class StockTable extends React.Component {
     const rowStyle = (row) => {
       if (row === this.state.activeRow) {
         return {
-          backgroundColor: "lightcyan",
+          backgroundColor: "purple",
           border: "solid 2px grey",
-          color: "purple"
+          color: "white"
         };
       }
     };
@@ -126,29 +127,29 @@ export default class StockTable extends React.Component {
       {
         sort: true,
         dataField: "title",
-        text: "Title",
+        text: "Title"
       },
       {
         sort: true,
         dataField: "artist",
-        text: "Artist",
+        text: "Artist"
       },
       {
         sort: true,
         dataField: "album",
-        text: "Album",
+        text: "Album"
       },
       {
         sort: true,
         dataField: "tags",
         filter: customFilter({
-          type: FILTER_TYPES.MULTISELECT
+          type: FILTER_TYPES.MULTISELECT,
         }),
         filterRenderer: (onFilter, column) =>
           this.getCustomFilter(onFilter, column, this.props.products),
-        text: "Tags",
-
+        text: "Tag"
       },
+      
     ];
 
     return (
@@ -156,7 +157,7 @@ export default class StockTable extends React.Component {
         <Row style={{ margin: "5px" }}>
           <Col>
             <Button
-              className="btn btn-default w-100 shadow-none"
+              className="btn btn-default bg-success w-100 shadow-none"
               onClick={() => this.setState({ filter: !this.state.filter })}
             >
               Filter
@@ -165,7 +166,7 @@ export default class StockTable extends React.Component {
           <Col sm={{ span: 4, offset: 4 }} className="align-self-center">
             <Button
               hidden={!this.state.filter}
-              className="btn btn-info text-white w-100 shadow-none"
+              className="btn btn-info bg-secondary text-white w-100 shadow-none"
               onClick={() => {
                 filters.forEach((filter) => filter());
               }}

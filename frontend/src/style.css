@@ -9,3 +9,11 @@
   background-color: white ;
 }
 
+.button:hover {
+  background-color: lightgrey;
+}
+
+.button:active {
+  box-shadow: none;
+  outline: none;
+}
