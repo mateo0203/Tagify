@@ -153,33 +153,32 @@ Router.delete('/deleteTrackFromTag/:tag_name/:track_id', async (req, res)=>{
 });
 
 //select tag from track
-Router.get('/getTagsFtrack/', async (req, res)=>{
+Router.get('/getTagsFtrack/:track_id', async (req, res)=>{
+    const track_id = req.params.track_id;
     try{
+        const user_id = getMyData();
+        const getTags = db.query('select tag_name from tags where $1 = tag_user AND $2 = ANY(tag_tracks)',[user_id, track_id] )
+        // CHECK THAT getTags != 0
 
-        const getTracks = db.query('select tag_name where $1 = user_id', )
-        
-        // CHECK THAT getTracks != 0
-
-        if (getTracks.length === 0){
+        if (getTags.rowCount === 0){
 
             return res.status(204).json({
                 statusMessage: 'failed',
                 errorMessage: 'No Content'
             });
-
         }
-
+        
         // RETURNING THE DATA OF getTracks
         
         return res.status(200).json({
             statusMessage:'success',
-            likedTracks: getTracks
+            tags: getTags
         });
     }
     catch(error){
 
         // IF THERE IS AN ERROR
-
+        console.log(error)
         return res.status(400).json({
             statusMessage: 'failed',
             errorMessage: 'Hubo un error.'
