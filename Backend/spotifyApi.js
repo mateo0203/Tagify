@@ -5,7 +5,7 @@ const spotifyApi = new SpotifyWebApi();
 
 //GET TOKEN
 function getToken() {
-    const token = "BQD4-49_qcRDmiO9EoPUQH0hdO92tdSvQAmfHQWwKWUXXGr22CNeqpxLR5tppZ8-Es83UufnWvQ484lV_Tsvj6IyfrfbI3eiBSn9WIeoCyiFra3rLwJ9DhJvQTNvodWooYsSm3FSqK8p6i143D4wTU6g94gP34HViDELkHE8WvTaAun28sgcEEJud7gTazfbsU-KMKZhmEacPOpTvTTiYpd2H4tId__uX-sAVKUlwKBHB6MNhB3MONgAaZTrQ6_qJmZh5mGqz7rtHEVnj6JWryYPYkGszMoZM1VcXOL8qxClG-JO8L1LaXxhA8wBC_MId9vwYs774CanMRLkM8_U9ZHGiA";
+    const token = "BQC6bygcEP57N87Ye_m2zfB87uW8en44oxjUSgAFicVghzXkWqozQbsPhCSWyY8hYdUwe9Dytk2yJDa3jiagVngwLymhbwgy3i0JXvA6cWrUFOCgIwC3Nh2xA0n67k5WB45Z08L2I2nln_q9ByEFKCgTDqEbIFs8EtbZqhwvHq10HvZHdOwoWFWT2LTD4JnQoRypyMPyVXjwff0MR9lTRamCtpgTK1cgrw-vMpVI1M0-0Fh5_ZgJFTmMx620mnFfkYvdDsS3rFoCaLXOqOWelKdfpz8UL2Ng-h5YwNm8pNN0MtZxgV2uuOnAPWldKka_7KlADZuKRXpr1i_lwaSBRqH2Vw";
 return token;
 }
 
@@ -74,9 +74,13 @@ async function getPlaylistTracks(playlistId) {
   for (let track_obj of data.body.items) {
     const track = track_obj.track;
     tracks.push(track);
-    lista.push([track.name, track.artists[0].name,track.id]);
+    lista.push([track.name, track.artists[0].name,track.album.name,track.id]);
+    //console.log(lista);
+    //break;
+    //console.log(track.album.name);
   }
-  //console.log(lista);
+  //console.log("dmskmdksmkkkkkkkk")
+  
   return lista;
 }
   
@@ -97,7 +101,7 @@ async function getUserPlaylists() {
 
 
 //FUNCTION CALLS
-  getUserPlaylists();
+  //getUserPlaylists();
   //getPlaylistTracks('357Q0F7H8iK0nB23o5MZKY');
 
   //getLikedTracks()
