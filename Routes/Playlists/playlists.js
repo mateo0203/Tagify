@@ -24,7 +24,7 @@ Router.get('/getPlaylists/', async (req, res)=>{
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getPlaylists
+            playlists: getPlaylists
         });
 
     }
@@ -63,7 +63,7 @@ Router.get('/getPlaylistTracks/:playlist', async (req, res)=>{
         
         return res.status(200).json({
             statusMessage:'success',
-            filterWorkers: getTracks
+            tracks: getTracks
         });
 
     }

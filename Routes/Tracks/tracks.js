@@ -152,6 +152,41 @@ Router.delete('/deleteTrackFromTag/:tag_name/:track_id', async (req, res)=>{
     }
 });
 
+//select tag from track
+Router.get('/getTagsFtrack/', async (req, res)=>{
+    try{
+
+        const getTracks = db.query('select tag_name where $1 = user_id', )
+        
+        // CHECK THAT getTracks != 0
+
+        if (getTracks.length === 0){
+
+            return res.status(204).json({
+                statusMessage: 'failed',
+                errorMessage: 'No Content'
+            });
+
+        }
+
+        // RETURNING THE DATA OF getTracks
+        
+        return res.status(200).json({
+            statusMessage:'success',
+            likedTracks: getTracks
+        });
+    }
+    catch(error){
+
+        // IF THERE IS AN ERROR
+
+        return res.status(400).json({
+            statusMessage: 'failed',
+            errorMessage: 'Hubo un error.'
+        });
+    }
+});
+
 //Get Track Audio Features
 
 Router.get('/audioFeatures/:track_id', async (req, res) => {
